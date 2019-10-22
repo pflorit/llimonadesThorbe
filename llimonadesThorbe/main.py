@@ -1,11 +1,29 @@
-class Main:
-    def mostrar_menu(self):
+class LemonTree:
+    def mostrar_menu_login(self):
         print("======== Thorbe Systems ========")
         print("[                              ]")
-        print("[     1· Iniciar sessio        ]")
-        print("[     2· Nou usuari            ]")
-        print("[     3· Sortir                ]")
+        print("[     1· Sign in               ]")
+        print("[     2· Log in                ]")
+        print("[     3· Exit                  ]")
         print("[                              ]")
         print("================================")
-        i = int(input("Seleccione una opcion (numero de lista): "))
+        i = int(input("Selet an option (number of list): "))
+        return i
 
+    def mostrar_menu_inicio(self):
+        print("======== Thorbe Systems ========")
+        print("[                               ]")
+        print("[     1· Sell                   ]")
+        print("[     2· Order                  ]")
+        print("[     3· Production             ]")
+        print("[     4· Accounting             ]")
+        print("[     5· Exit                   ]")
+        print("[                               ]")
+        print("================================")
+        i = int(input("Selet an option (number of list): "))
+        return i
+
+
+a = LemonTree()
+a.mostrar_menu_inicio()
+a.mostrar_menu_login()
