@@ -1,3 +1,5 @@
+import mysql.connector
+
 class LemonTree:
     def mostrar_menu_login(self):
         print("======== Thorbe Systems ========")
@@ -22,6 +24,16 @@ class LemonTree:
         print("================================")
         i = int(input("Selet an option (number of list): "))
         return i
+
+    def create_connection(self, ip, nombre):
+        mydb = mysql.connector.connect(
+            host=ip,
+            user="root",
+            passwd="",
+            database=nombre
+        )
+
+        return mydb
 
 
 a = LemonTree()
