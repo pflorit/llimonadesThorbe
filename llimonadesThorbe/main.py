@@ -1,5 +1,6 @@
 import mysql.connector
 
+
 class LemonTree:
     def mostrar_menu_login(self):
         print("======== Thorbe Systems ========")
@@ -32,10 +33,29 @@ class LemonTree:
             passwd="",
             database=nombre
         )
-
         return mydb
+
+    def newUser(self, username, pwd, bd):
+        micursor = bd.cursor()
+        micursor.execute("INSERT INTO `users`(`userName`, `passwd`) VALUES ('{}','{}')".format(username, pwd))
+        bd.commit()
+
+    def logIn(self, username, pwd, bd):
+        micursor = bd.cursor()
+        micursor.execute("SELECT passwd FROM `users` WHERE userName=\"{}\"".format(username))
+        stored_pwd =micursor.fetchall()
+        if pwd == stored_pwd:
+            print("iniciado")
+            return True
+        else:
+            print("Datos incorrectos")
+            return False
 
 
 a = LemonTree()
-a.mostrar_menu_inicio()
-a.mostrar_menu_login()
+mydb = a.create_connection("localhost", "lemondb")
+micursor = mydb.cursor()
+micursor.execute("SELECT passwd FROM `users`")
+stored_pwd = micursor.fetchall()
+for pwd in stored_pwd:
+    print(pwd)
