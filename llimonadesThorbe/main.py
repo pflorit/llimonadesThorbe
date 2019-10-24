@@ -14,11 +14,11 @@ class LemonTree:
         return i
 
     def mostrar_menu_inicio(self):
-        print("======== Thorbe Systems ========")
+        print("======== Thorbe  Systems ========")
         print("[                               ]")
-        print("[     1· Sell                   ]")
-        print("[     2· Order                  ]")
-        print("[     3· Production             ]")
+        print("[     1· Sell lemonade          ]")
+        print("[     2· Order ingredients      ]")
+        print("[     3· Make lemonade          ]")
         print("[     4· Accounting             ]")
         print("[     5· Exit                   ]")
         print("[                               ]")
@@ -43,19 +43,38 @@ class LemonTree:
     def logIn(self, username, pwd, bd):
         micursor = bd.cursor()
         micursor.execute("SELECT passwd FROM `users` WHERE userName=\"{}\"".format(username))
-        stored_pwd =micursor.fetchall()
-        if pwd == stored_pwd:
-            print("iniciado")
+        stored_pwd = micursor.fetchall()[0]
+        if "('{}',)".format(pwd) == str(stored_pwd):
+            print("Successfully logged")
             return True
         else:
-            print("Datos incorrectos")
+            print("The password is not correct. Please try again.")
             return False
+
+    def make_lemondae(self, liters, bd):
+        li = int(liters);
+        micursor = bd.cursor()
+        micursor.execute("UPDATE `products` SET `total_amount`=`total_amount`+{} WHERE 1".format(li))
+        bd.commit()
+
+    def sell_lemondae(self, liters, bd):
+        r = self.remaining(bd)
+        li = int(liters)
+        if li > r or r == 0:
+            print("Sorry, there's only {}L left".format(r))
+        else:
+            micursor = bd.cursor()
+            micursor.execute("UPDATE `products` SET `total_amount`=`total_amount`-{} WHERE 1".format(li))
+            bd.commit()
+            print("Transaction complete.")
+
+    def remaining(self, bd):
+        micursor=bd.cursor()
+        micursor.execute("SELECT total_amount FROM `products` WHERE 1")
+        remains = str(micursor.fetchall()[0]).replace("(", "")
+        remains = remains.replace(",)", "")
+        return int(remains)
 
 
 a = LemonTree()
-mydb = a.create_connection("localhost", "lemondb")
-micursor = mydb.cursor()
-micursor.execute("SELECT passwd FROM `users`")
-stored_pwd = micursor.fetchall()
-for pwd in stored_pwd:
-    print(pwd)
+
