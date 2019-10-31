@@ -1,7 +1,7 @@
 import mysql.connector
 
 
-def mostrar_menu_login(self):
+def mostrar_menu_login(bd):
     print("======== Thorbe Systems ========")
     print("[                              ]")
     print("[     1· Sign in               ]")
@@ -9,11 +9,28 @@ def mostrar_menu_login(self):
     print("[     3· Exit                  ]")
     print("[                              ]")
     print("================================")
-    i = int(input("Selet an option (number of list): "))
-    return i
+    i = input("Selet an option (number of list): ")
+    if i == "1":
+        username = input("Username: ")
+        passwd = input("Password: ")
+        permited = logIn(username, passwd, bd)
+        if permited:
+            mostrar_menu_inicio()
+        else:
+            mostrar_menu_login(bd)
+
+    elif i == "2":
+        newUser(bd)
+        mostrar_menu_login(bd)
+
+    elif i == "3":
+        print("Nos vemos!")
+
+    else:
+        mostrar_menu_login(bd)
 
 
-def mostrar_menu_inicio(self):
+def mostrar_menu_inicio():
     print("======== Thorbe  Systems ========")
     print("[                               ]")
     print("[     1· Sell lemonade          ]")
@@ -37,10 +54,32 @@ def create_connection(ip, nombre):
     return mydb
 
 
-def newUser(username, pwd, bd):
+def user_exists(micursor, username):
+    micursor.execute("SELECT userName FROM `users`")
+    repetido = False
+    listUsers = micursor.fetchall()
+    for res in listUsers:
+        res = str(res).replace("('", "")
+        res = res.replace("',)", "")
+
+        if str(res) == str(username):
+            print("Sorry, user already registered.")
+            repetido = True
+
+    return repetido
+
+
+def newUser(bd):
     micursor = bd.cursor()
+    repetido = True
+    while repetido:
+        username = input("Insert a username: ")
+        repetido = user_exists(micursor, username)
+
+    pwd = input("Insert a password: ")
     micursor.execute("INSERT INTO `users`(`userName`, `passwd`) VALUES ('{}','{}')".format(username, pwd))
     bd.commit()
+    print("Welcome to the system {}!".format(username))
 
 
 def logIn(username, pwd, bd):
@@ -63,7 +102,7 @@ def make_lemondae(liters, bd):
 
 
 def sell_lemondae(liters, bd):
-    r = remaining(bd)
+    r = remaining_lemonade(bd)
     li = int(liters)
     if li > r or r == 0:
         print("Sorry, there's only {}L left".format(r))
@@ -75,7 +114,7 @@ def sell_lemondae(liters, bd):
 
 
 def remaining_lemonade(bd):
-    micursor=bd.cursor()
+    micursor = bd.cursor()
     micursor.execute("SELECT total_amount FROM `products` WHERE 1")
     remains = str(micursor.fetchall()[0]).replace("(", "")
     remains = remains.replace(",)", "")
@@ -83,14 +122,11 @@ def remaining_lemonade(bd):
 
 
 def remaining_products(bd):
-    micursor=bd.cursor()
+    micursor = bd.cursor()
     micursor.execute("SELECT * FROM `products`")
     remains = micursor.fetchall()
     return remains
 
 
 mydb = create_connection("localhost", "lemondb")
-seguir = True
-while seguir:
-    seguir.mostrar_menu_login()
-print(remaining_products(mydb))
+mostrar_menu_login(mydb)
