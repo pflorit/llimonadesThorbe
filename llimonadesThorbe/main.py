@@ -15,7 +15,7 @@ def mostrar_menu_login(bd):
         passwd = input("Password: ")
         permited = logIn(username, passwd, bd)
         if permited:
-            mostrar_menu_inicio()
+            mostrar_menu_inicio(bd)
         else:
             mostrar_menu_login(bd)
 
@@ -24,13 +24,13 @@ def mostrar_menu_login(bd):
         mostrar_menu_login(bd)
 
     elif i == "3":
-        print("Nos vemos!")
+        print("See you later!")
 
     else:
         mostrar_menu_login(bd)
 
 
-def mostrar_menu_inicio():
+def mostrar_menu_inicio(bd):
     print("======== Thorbe  Systems ========")
     print("[                               ]")
     print("[     1· Sell lemonade          ]")
@@ -40,18 +40,34 @@ def mostrar_menu_inicio():
     print("[     5· Exit                   ]")
     print("[                               ]")
     print("================================")
-    i = int(input("Selet an option (number of list): "))
-    return i
+    i = input("Selet an option (number of list): ")
+    if i == "1":
+        sell_lemondae(bd)
+
+    elif i == "2":
+        print("to do")
+
+    elif i == "3":
+        make_lemondae(bd)
+
+    elif i == "4":
+        print("to do")
+
+    elif i == "5":
+        print("See you later!")
+
+    else:
+        mostrar_menu_inicio(bd)
 
 
 def create_connection(ip, nombre):
-    mydb = mysql.connector.connect(
+    connection = mysql.connector.connect(
         host=ip,
         user="root",
         passwd="",
         database=nombre
     )
-    return mydb
+    return connection
 
 
 def user_exists(micursor, username):
@@ -94,14 +110,18 @@ def logIn(username, pwd, bd):
         return False
 
 
-def make_lemondae(liters, bd):
+def make_lemondae(bd):
+    liters = int(input("How many litters are you going to produce? "))
     li = int(liters)
     micursor = bd.cursor()
     micursor.execute("UPDATE `products` SET `total_amount`=`total_amount`+{} WHERE 1".format(li))
     bd.commit()
+    print("*brrrrr Ding!* Lemonade produced.")
+    mostrar_menu_inicio(bd)
 
 
-def sell_lemondae(liters, bd):
+def sell_lemondae(bd):
+    liters = int(input("How many litters do you want? "))
     r = remaining_lemonade(bd)
     li = int(liters)
     if li > r or r == 0:
@@ -111,6 +131,7 @@ def sell_lemondae(liters, bd):
         micursor.execute("UPDATE `products` SET `total_amount`=`total_amount`-{} WHERE 1".format(li))
         bd.commit()
         print("Transaction complete.")
+    mostrar_menu_inicio(bd)
 
 
 def remaining_lemonade(bd):
