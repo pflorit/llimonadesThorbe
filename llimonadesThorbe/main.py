@@ -38,7 +38,8 @@ def mostrar_menu_inicio(bd):
     print("[     2· Order ingredients      ]")
     print("[     3· Make lemonade          ]")
     print("[     4· Accounting             ]")
-    print("[     5· Exit                   ]")
+    print("[     5· Close session          ]")
+    print("[     0· Exit                   ]")
     print("[                               ]")
     print("================================")
     i = input("Selet an option (number of list): ")
@@ -55,6 +56,9 @@ def mostrar_menu_inicio(bd):
         see_accounting(bd)
 
     elif i == "5":
+        mostrar_menu_login(bd)
+
+    elif i == "0":
         print("See you later!")
         bd.close()
 
@@ -75,16 +79,16 @@ def create_connection(ip, nombre):
 
 def see_accounting(bd):
     micursor = bd.cursor()
-    micursor.execute("SELECT `date`,sum(`losses`)as total_lost from `accounting` group by `date`")
+    micursor.execute("SELECT `date`,sum(`losses`)as total_lost, sum(`profit`)as total_won "
+                     "from `accounting` group by `date`")
     result = micursor.fetchall()
-    print("Losses per day:")
     for res in result:
-        print(res)
-    micursor.execute("SELECT `date`,sum(`profit`)as total_won from `accounting` group by `date`")
-    result = micursor.fetchall()
-    print("Profits per day:")
-    for res in result:
-        print(res)
+        print("~~~~~~~~~~~~~~~~~~~~~~~~")
+        print("Date: " + str(res[0]))
+        print("~~~~~~~~~~~~~~~~~~~~~~~~")
+        print("Expenses: " + str(res[1]) + "€")
+        print("Earnings: " + str(res[2]) + "€")
+        print()
     mostrar_menu_inicio(bd)
 
 
@@ -119,13 +123,18 @@ def newUser(bd):
 def logIn(username, pwd, bd):
     micursor = bd.cursor()
     micursor.execute("SELECT passwd FROM `users` WHERE userName=\"{}\"".format(username))
-    stored_pwd = micursor.fetchall()[0]
-    if "('{}',)".format(pwd) == str(stored_pwd):
-        print("Successfully logged")
-        return True
-    else:
-        print("The password is not correct. Please try again.")
+    stored_pwd = micursor.fetchall()
+    if len(stored_pwd) <= 0:
+        print("User does not exist.")
         return False
+    else:
+        stored_pwd = stored_pwd[0]
+        if "('{}',)".format(pwd) == str(stored_pwd):
+            print("Successfully logged")
+            return True
+        else:
+            print("The password is not correct. Please try again.")
+            return False
 
 
 def make_lemondae(bd):
